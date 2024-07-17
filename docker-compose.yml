@@ -50,12 +50,15 @@ services:
 
   gpubuilder:
     image: ${IMAGE_REPO}/milvus-env:gpu-${OS_NAME}-${GPU_DATE_VERSION}
+    # network_mode: "host"
     # Build devcontainer
     build:
       context: .
       dockerfile: build/docker/builder/gpu/${OS_NAME}/Dockerfile
       args:
         TARGETARCH: ${IMAGE_ARCH}
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
       cache_from:
         - ${IMAGE_REPO}/milvus-env:gpu-${OS_NAME}-${LATEST_GPU_DATE_VERSION}
     # user: {{ CURRENT_ID }}
@@ -71,6 +74,9 @@ services:
       MINIO_ADDRESS: ${MINIO_ADDRESS}
       CONAN_USER_HOME: /home/milvus
       AZURE_STORAGE_CONNECTION_STRING: ${AZURITE_CONNECTION_STRING}
+      GOPROXY: https://goproxy.cn
+      CARGO_NET_GIT_FETCH_WITH_CLI: true
+      # HOME: /root
     volumes: &builder-volumes-gpu
       - .:/go/src/github.com/milvus-io/milvus:delegated
       - ${DOCKER_VOLUME_DIRECTORY:-.docker-gpu}/${OS_NAME}-ccache:/ccache:delegated

@@ -5,21 +5,21 @@ set -euo pipefail
 # Absolute path to the toplevel milvus directory.
 toplevel=$(dirname "$(cd "$(dirname "${0}")"; pwd)")
 
-if [[ "$IS_NETWORK_MODE_HOST" == "true" ]]; then
-  sed -i '/gpubuilder:/,/^\s*$/s/image: \${IMAGE_REPO}\/milvus-env:gpu-\${OS_NAME}-\${GPU_DATE_VERSION}/&\n    network_mode: "host"/'   $toplevel/docker-compose.yml
-fi
+# if [[ "$IS_NETWORK_MODE_HOST" == "true" ]]; then
+#   sed -i '/gpubuilder:/,/^\s*$/s/image: \${IMAGE_REPO}\/milvus-env:gpu-\${OS_NAME}-\${GPU_DATE_VERSION}/&\n    network_mode: "host"/'   $toplevel/docker-compose.yml
+# fi
 
 export OS_NAME="${OS_NAME:-ubuntu22.04}"
 
 pushd "${toplevel}"
 
 if [[ "${1-}" == "pull" ]]; then
-    docker-compose pull --ignore-pull-failures gpubuilder
+    docker compose pull --ignore-pull-failures gpubuilder
     exit 0
 fi
 
 if [[ "${1-}" == "down" ]]; then
-    docker-compose down
+    docker compose down
     exit 0
 fi
 
@@ -31,10 +31,10 @@ fi
 # 500, promote it to 501. This is notably necessary on macOS Lion and later,
 # where administrator accounts are created with a GID of 20. This solution is
 # not foolproof, but it works well in practice.
-uid=$(id -u)
-gid=$(id -g)
-[ "$uid" -lt 500 ] && uid=501
-[ "$gid" -lt 500 ] && gid=$uid
+# uid=$(id -u)
+# gid=$(id -g)
+# [ "$uid" -lt 500 ] && uid=501
+# [ "$gid" -lt 500 ] && gid=$uid
 
 mkdir -p "${DOCKER_VOLUME_DIRECTORY:-.docker-gpu}/amd64-${OS_NAME}-ccache"
 mkdir -p "${DOCKER_VOLUME_DIRECTORY:-.docker-gpu}/amd64-${OS_NAME}-go-mod"
@@ -42,15 +42,15 @@ mkdir -p "${DOCKER_VOLUME_DIRECTORY:-.docker-gpu}/amd64-${OS_NAME}-vscode-extens
 mkdir -p "${DOCKER_VOLUME_DIRECTORY:-.docker-gpu}/amd64-${OS_NAME}-conan"
 chmod -R 777 "${DOCKER_VOLUME_DIRECTORY:-.docker-gpu}"
 
-docker-compose pull --ignore-pull-failures gpubuilder
+docker compose pull --ignore-pull-failures gpubuilder
 if [[ "${CHECK_BUILDER:-}" == "1" ]]; then
-    docker-compose build gpubuilder 
+    docker compose build gpubuilder 
 fi
 
 if [[ "$(id -u)" != "0" ]]; then
-    docker-compose run --no-deps --rm -u "$uid:$gid" gpubuilder "$@"
+    docker compose run --env HTTP_PROXY=${http_proxy} --env HTTPS_PROXY=${https_proxy} --no-deps --rm gpubuilder "$@"
 else
-    docker-compose run --no-deps --rm gpubuilder "$@"
+    docker compose run --no-deps --rm gpubuilder "$@"
 fi
 
 popd

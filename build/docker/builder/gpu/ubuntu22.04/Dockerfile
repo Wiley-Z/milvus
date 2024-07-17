@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget curl ca-ce
 # Install go
 RUN mkdir -p /usr/local/go && wget -qO- "https://go.dev/dl/go1.20.7.linux-$TARGETARCH.tar.gz" | tar --strip-components=1 -xz -C /usr/local/go
 # Install conan
+RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip3 install conan==1.61.0
 # Install rust
 RUN curl https://sh.rustup.rs -sSf | \

@@ -1501,7 +1501,7 @@ The maximum rate will not be greater than ` + "max" + `.`,
 	p.TopKLimit = ParamItem{
 		Key:          "quotaAndLimits.limits.topK",
 		Version:      "2.2.1",
-		DefaultValue: "16384",
+		DefaultValue: "2147483648",
 		FallbackKeys: []string{
 			"common.topKLimit",
 		},
@@ -1514,7 +1514,7 @@ Check https://milvus.io/docs/limitations.md for more details.`,
 	p.NQLimit = ParamItem{
 		Key:          "quotaAndLimits.limits.nq",
 		Version:      "2.3.0",
-		DefaultValue: "16384",
+		DefaultValue: "2147483648",
 		FallbackKeys: []string{},
 		Doc: `Search limit, which applies on:
 maximum # of search requests (nq).
@@ -1525,7 +1525,7 @@ Check https://milvus.io/docs/limitations.md for more details.`,
 	p.MaxQueryResultWindow = ParamItem{
 		Key:          "quotaAndLimits.limits.maxQueryResultWindow",
 		Version:      "2.3.0",
-		DefaultValue: "16384",
+		DefaultValue: "2147483648",
 		FallbackKeys: []string{},
 		Doc:          `Query limit, which applies on: maximum of offset + limit`,
 	}
